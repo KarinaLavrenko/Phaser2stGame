@@ -159,19 +159,10 @@ function hitBomb(player, bomb) {
         lives--;
         livesText.setText('Lives: ' + lives);
         player.setPosition(100, 450);
-
-        this.tweens.add({
-            targets: bomb,
-            duration: 200,
-            scaleX: 0,
-            scaleY: 0,
-            onComplete: function () {
-                bomb.destroy();
-            }
-        });
-
+//Відтворення звуку
         this.sound.play('explosionSound');
     } else {
+        //Завершення гри, якщо закінчилося життя
         gameOver = true;
         this.physics.pause();
         player.setTint(0xff0000);
