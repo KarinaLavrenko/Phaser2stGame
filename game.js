@@ -74,7 +74,7 @@ function create() {
         frameRate: 10,
         repeat: -1
     });
-
+//Додали курсор
     cursors = this.input.keyboard.createCursorKeys();
 
     stars = this.physics.add.group({
