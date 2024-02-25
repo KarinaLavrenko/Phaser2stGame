@@ -91,7 +91,7 @@ function create() {
 
     scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
     livesText = this.add.text(16, 50, 'Lives: ' + lives, { fontSize: '32px', fill: '#000' });
-
+//Додали зіткнення зірок з платформою
     this.physics.add.collider(player, platforms);
     this.physics.add.collider(stars, platforms);
     this.physics.add.collider(bombs, platforms);
@@ -104,7 +104,7 @@ function update() {
     if (gameOver) {
         return;
     }
-
+//Додали керування персонажем
     if (cursors.left.isDown) {
         player.setVelocityX(-160);
         player.anims.play('left', true);
@@ -120,7 +120,7 @@ function update() {
         player.setVelocityY(-330);
     }
 }
-
+//Додали збираня зірок
 function collectStar(player, star) {
     star.disableBody(true, true);
     score += 10;
@@ -135,7 +135,7 @@ function collectStar(player, star) {
             star.destroy();
         }
     });
-
+//Додали звук збирання зірок
     this.sound.play('collectStarSound');
 
     var x = Phaser.Math.Between(0, config.width);
