@@ -1,7 +1,8 @@
 var config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: 1920,
+    height: 1080,
+    parent: game,
     physics: {
         default: 'arcade',
         arcade: {
@@ -43,12 +44,12 @@ function preload() {
 
 function create() {
     //Додали платформу та небо
-    this.add.image(400, 300, 'sky');
+    this.add.image(0, 0, 'sky').setPosition(0, 2.5).setScale(3.5)
     platforms = this.physics.add.staticGroup();
-    platforms.create(400, 568, 'ground').setScale(2).refreshBody();
-    platforms.create(600, 400, 'ground');
-    platforms.create(50, 250, 'ground');
-    platforms.create(750, 220, 'ground');
+    platforms.create(950, 850, 'ground').setScale(3.8).refreshBody();
+    platforms.create(1500, 600, 'ground').setScale(1.5);
+    platforms.create(400, 450, 'ground').setScale(1.5);
+    platforms.create(1550, 350, 'ground').setScale(1.5);
     //Додали гравця
 
     player = this.physics.add.sprite(100, 450, 'dude');
@@ -124,7 +125,9 @@ function update() {
 function collectStar(player, star) {
     star.disableBody(true, true);
     score += 10;
-    scoreText.setText('Score: ' + score);
+    //scoreText.setText('Score: ' + score);
+    document.getElementById('score').innerText = score
+    document.getElementById('timer').innerText = timer
 
     this.tweens.add({
         targets: star,

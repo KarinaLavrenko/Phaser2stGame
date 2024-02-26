@@ -5,3 +5,20 @@ body {
     justify-content: center;
     align-items: center;
 }
+
+#game{
+    position: absolute;
+    z-index: -5;
+}
+
+#score{
+    position: fixed;
+    top: 10px;
+    left: 100px;
+}
+
+#timer{
+    position: fixed;
+    top: 10px;
+    left: 1000px;
+}
