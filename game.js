@@ -47,12 +47,12 @@ function create() {
     this.add.image(0, 0, 'sky').setPosition(0, 2.5).setScale(3.5)
     platforms = this.physics.add.staticGroup();
     platforms.create(950, 850, 'ground').setScale(3.8).refreshBody();
-    platforms.create(1500, 600, 'ground').setScale(1.5);
+    platforms.create(1100, 600, 'ground').setScale(1.5);
     platforms.create(400, 450, 'ground').setScale(1.5);
     platforms.create(1550, 350, 'ground').setScale(1.5);
     //Додали гравця
 
-    player = this.physics.add.sprite(100, 450, 'dude');
+    player = this.physics.add.sprite(900, 550, 'dude');
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
 
