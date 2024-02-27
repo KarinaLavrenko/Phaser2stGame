@@ -27,6 +27,7 @@ var lives = 3;
 var gameOver = false;
 var scoreText;
 var livesText;
+var timer; // Додали таймера
 var game = new Phaser.Game(config);
 
 function preload() {
@@ -36,7 +37,7 @@ function preload() {
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
     this.load.spritesheet('dude', 'assets/dude.png',
-        { frameWidth: 29, frameHeight: 78 }
+        { frameWidth: 140, frameHeight: 77 }
     );
     this.load.audio('collectStarSound', 'assets/collect_star.mp3');
     this.load.audio('explosionSound', 'assets/explosion.mp3');
@@ -52,7 +53,7 @@ function create() {
     platforms.create(1550, 350, 'ground').setScale(1.5);
     //Додали гравця
 
-    player = this.physics.add.sprite(900, 550, 'dude');
+    player = this.physics.add.sprite(1500, 1050, 'dude');
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
 
