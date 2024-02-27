@@ -37,7 +37,7 @@ function preload() {
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
     this.load.spritesheet('dude', 'assets/dude.png',
-        { frameWidth: 140, frameHeight: 77 }
+        { frameWidth: 32, frameHeight: 48 }
     );
     this.load.audio('collectStarSound', 'assets/collect_star.mp3');
     this.load.audio('explosionSound', 'assets/explosion.mp3');
@@ -48,13 +48,13 @@ function create() {
     this.add.image(0, 0, 'sky').setPosition(0, 2.5).setScale(3.5)
     platforms = this.physics.add.staticGroup();
     platforms.create(950, 850, 'ground').setScale(3.8).refreshBody();
-    platforms.create(1100, 600, 'ground').setScale(1.5);
-    platforms.create(400, 450, 'ground').setScale(1.5);
-    platforms.create(1550, 350, 'ground').setScale(1.5);
+    platforms.create(1100, 650, 'ground').setScale(1.5);
+    platforms.create(500, 500, 'ground').setScale(1.5);
+    platforms.create(1550, 450, 'ground').setScale(1.5);
     //Додали гравця
 
-    player = this.physics.add.sprite(1500, 1050, 'dude');
-    player.setBounce(0.2);
+    player = this.physics.add.sprite(400, 450, 'dude');
+    player.setBounce(0.4);
     player.setCollideWorldBounds(true);
 
     this.anims.create({
@@ -76,12 +76,12 @@ function create() {
         frameRate: 10,
         repeat: -1
     });
-//Додали курсор
+    //Додали курсор
     cursors = this.input.keyboard.createCursorKeys();
 
     stars = this.physics.add.group({
         key: 'star',
-        repeat: 11,
+        repeat: 24,
         setXY: { x: 12, y: 0, stepX: 70 }
     });
 
@@ -93,20 +93,28 @@ function create() {
 
     scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
     livesText = this.add.text(16, 50, 'Lives: ' + lives, { fontSize: '32px', fill: '#000' });
-//Додали зіткнення зірок з платформою
+    //Додали зіткнення зірок з платформою
     this.physics.add.collider(player, platforms);
     this.physics.add.collider(stars, platforms);
     this.physics.add.collider(bombs, platforms);
 
     this.physics.add.overlap(player, stars, collectStar, null, this);
     this.physics.add.collider(player, bombs, hitBomb, null, this);
+
+    // Додали таймер
+    timer = this.time.addEvent({
+        delay: 1000, // Кожну секунду
+        callback: updateTimer,
+        callbackScope: this,
+        loop: true
+    });
 }
 
 function update() {
     if (gameOver) {
         return;
     }
-//Додали керування персонажем
+    //Додали керування персонажем
     if (cursors.left.isDown) {
         player.setVelocityX(-160);
         player.anims.play('left', true);
@@ -139,13 +147,13 @@ function collectStar(player, star) {
             star.destroy();
         }
     });
-//Додали звук збирання зірок
+    //Додали звук збирання зірок
     this.sound.play('collectStarSound');
 
     var x = Phaser.Math.Between(0, config.width);
     var y = Phaser.Math.Between(0, config.height);
     var bomb = bombs.create(x, y, 'bomb');
-    bomb.setScale(0.25);
+    bomb.setScale(1);
     bomb.setBounce(1);
     bomb.setCollideWorldBounds(true);
     bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
@@ -163,7 +171,7 @@ function hitBomb(player, bomb) {
         lives--;
         livesText.setText('Lives: ' + lives);
         player.setPosition(100, 450);
-//Відтворення звуку
+        //Відтворення звуку
         this.sound.play('explosionSound');
     } else {
         //Завершення гри, якщо закінчилося життя
@@ -171,5 +179,12 @@ function hitBomb(player, bomb) {
         this.physics.pause();
         player.setTint(0xff0000);
         player.anims.play('turn');
+    }
+}
+
+// Функція для оновлення таймера
+function updateTimer() {
+    if (!gameOver) {
+        document.getElementById('timer').innerText = timer.getElapsedSeconds();
     }
 }
