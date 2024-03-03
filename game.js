@@ -1,7 +1,7 @@
 var config = {
     type: Phaser.AUTO,
     width: 1920,
-    height: 1080,
+    height: 1079,
     parent: game,
     physics: {
         default: 'arcade',
@@ -23,16 +23,14 @@ var bombs;
 var platforms;
 var cursors;
 var score = 0;
-var lives = 3;
 var gameOver = false;
 var scoreText;
-var livesText;
-var timer; // Додали таймера
 var game = new Phaser.Game(config);
+var worldWidth = 9600;
 
 function preload() {
     //Додали асети
-    this.load.image('sky', 'assets/sky.png');
+    this.load.image('fon+', 'assets/fon+.png');
     this.load.image('ground', 'assets/platform.png');
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
@@ -45,26 +43,40 @@ function preload() {
 
 function create() {
     //Додали платформу та небо
-    //this.add.image(0, 0, 'sky').setPosition(0, 2.5).setScale(3.5)
-    this.add.tileSprite(0,0, worldWidth, 1080, "fon+").setOrigin(0,0);
+    ////this.add.image(0, 0, 'fon').setOrigin(0,0)
+    this.add.tileSprite(0,0, worldWidth, 1079, "fon+").setOrigin(0,0);
     
     platforms = this.physics.add.staticGroup();
+    //Створення землі на всю ширину
     for (var x = 0; x < worldWidth; x = x + 384) {
         console.log(x)
-        platforms.create(x, 1080 - 93, 'ground').setOrigin(0,0).refreshBody();
+        platforms.create(x, 1079 - 93, 'ground').setOrigin(0,0).refreshBody();
     }
 
-    //platforms.create(950, 850, 'ground').setScale(3.8).refreshBody();
+    //platforms.create(900, 900, 'ground').setScale(2).refreshBody();
    
-    //platforms.create(1100, 650, 'ground').setScale(1.5);
-    //platforms.create(500, 500, 'ground').setScale(1.5);
-    //platforms.create(1550, 450, 'ground').setScale(1.5);
-    
+    //platforms.create(600, 400, 'ground');
+    //platforms.create(500, 250, 'ground');
+    //platforms.create(750, 220, 'ground');
+
     //Додали гравця
 
-    player = this.physics.add.sprite(400, 450, 'dude');
-    player.setBounce(0.4);
-    player.setCollideWorldBounds(true);
+    player = this.physics.add.sprite(1500, 900, 'dude');
+    player.setBounce(0.2);
+    player.setCollideWorldBounds(false);
+    //Налаштування камери
+    this.cameras.main.setBounds(0,0,worldWidth, 1079);
+    this.physics.world.setBounds(0,0,worldWidth, 1079);
+    //Додали слідкування камери за спрайтом
+    this.cameras.main.startFollow(player);
+
+    var x = 0;
+    while (x < worldWidth) {
+        var y = Phaser.Math.FloatBetween(540, 1079); // Змінили діапазон висоти платформ
+        platforms.create(x, y, 'ground').setScale(0.5).refreshBody(); // Зменшели масштаб платформ
+        x += Phaser.Math.FloatBetween(200, 800); // Збільшили відстань між платформами
+    }
+
 
     this.anims.create({
         key: 'left',
@@ -90,18 +102,18 @@ function create() {
 
     stars = this.physics.add.group({
         key: 'star',
-        repeat: 24,
-        setXY: { x: 12, y: 0, stepX: 70 }
+        repeat: 111,
+        setXY: { x: 12, y: 0, stepX: 90 }
     });
 
-    stars.children.iterate(function (child) {
+    stars.children.iterate(function (child) 
+    {
         child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
     });
 
     bombs = this.physics.add.group();
 
     scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
-    livesText = this.add.text(16, 50, 'Lives: ' + lives, { fontSize: '32px', fill: '#000' });
     //Додали зіткнення зірок з платформою
     this.physics.add.collider(player, platforms);
     this.physics.add.collider(stars, platforms);
@@ -109,14 +121,6 @@ function create() {
 
     this.physics.add.overlap(player, stars, collectStar, null, this);
     this.physics.add.collider(player, bombs, hitBomb, null, this);
-
-    // Додали таймер
-    timer = this.time.addEvent({
-        delay: 1000, // Кожну секунду
-        callback: updateTimer,
-        callbackScope: this,
-        loop: true
-    });
 }
 
 function update() {
@@ -136,26 +140,16 @@ function update() {
     }
 
     if (cursors.up.isDown && player.body.touching.down) {
-        player.setVelocityY(-330);
+        player.setVelocityY(-480);
     }
 }
 //Додали збираня зірок
-function collectStar(player, star) {
+function collectStar(player, star) 
+{
     star.disableBody(true, true);
     score += 10;
-    //scoreText.setText('Score: ' + score);
-    document.getElementById('score').innerText = score
-    document.getElementById('timer').innerText = timer
+    scoreText.setText('Score: ' + score);
 
-    this.tweens.add({
-        targets: star,
-        duration: 200,
-        scaleX: 0,
-        scaleY: 0,
-        onComplete: function () {
-            star.destroy();
-        }
-    });
     //Додали звук збирання зірок
     this.sound.play('collectStarSound');
 
@@ -167,7 +161,8 @@ function collectStar(player, star) {
     bomb.setCollideWorldBounds(true);
     bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
 
-    if (stars.countActive(true) === 0) {
+    if (stars.countActive(true) === 0) 
+    {
         stars.children.iterate(function (child) {
             child.enableBody(true, child.x, 0, true, true);
             child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
@@ -175,25 +170,13 @@ function collectStar(player, star) {
     }
 }
 
-function hitBomb(player, bomb) {
-    if (lives > 0) {
-        lives--;
-        livesText.setText('Lives: ' + lives);
-        player.setPosition(100, 450);
-        //Відтворення звуку
-        this.sound.play('explosionSound');
-    } else {
-        //Завершення гри, якщо закінчилося життя
-        gameOver = true;
+function hitBomb(player, bomb)
+    {
         this.physics.pause();
+    
         player.setTint(0xff0000);
+    
         player.anims.play('turn');
+    
+        gameOver = true;
     }
-}
-
-// Функція для оновлення таймера
-function updateTimer() {
-    if (!gameOver) {
-        document.getElementById('timer').innerText = timer.getElapsedSeconds();
-    }
-}
