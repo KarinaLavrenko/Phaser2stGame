@@ -45,12 +45,21 @@ function preload() {
 
 function create() {
     //Додали платформу та небо
-    this.add.image(0, 0, 'sky').setPosition(0, 2.5).setScale(3.5)
+    //this.add.image(0, 0, 'sky').setPosition(0, 2.5).setScale(3.5)
+    this.add.tileSprite(0,0, worldWidth, 1080, "fon+").setOrigin(0,0);
+    
     platforms = this.physics.add.staticGroup();
-    platforms.create(950, 850, 'ground').setScale(3.8).refreshBody();
-    platforms.create(1100, 650, 'ground').setScale(1.5);
-    platforms.create(500, 500, 'ground').setScale(1.5);
-    platforms.create(1550, 450, 'ground').setScale(1.5);
+    for (var x = 0; x < worldWidth; x = x + 384) {
+        console.log(x)
+        platforms.create(x, 1080 - 93, 'ground').setOrigin(0,0).refreshBody();
+    }
+
+    //platforms.create(950, 850, 'ground').setScale(3.8).refreshBody();
+   
+    //platforms.create(1100, 650, 'ground').setScale(1.5);
+    //platforms.create(500, 500, 'ground').setScale(1.5);
+    //platforms.create(1550, 450, 'ground').setScale(1.5);
+    
     //Додали гравця
 
     player = this.physics.add.sprite(400, 450, 'dude');
