@@ -70,12 +70,6 @@ function create() {
     //Додали слідкування камери за спрайтом
     this.cameras.main.startFollow(player);
 
-    var x = 0;
-    while (x < worldWidth) {
-        var y = Phaser.Math.FloatBetween(540, 1079); // Змінили діапазон висоти платформ
-        platforms.create(x, y, 'ground').setScale(0.5).refreshBody(); // Зменшели масштаб платформ
-        x += Phaser.Math.FloatBetween(200, 800); // Збільшили відстань між платформами
-    }
 
 
     this.anims.create({
