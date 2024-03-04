@@ -1,7 +1,7 @@
 var config = {
     type: Phaser.AUTO,
     width: 1920,
-    height: 1079,
+    height: 1080,
     parent: game,
     physics: {
         default: 'arcade',
@@ -32,6 +32,7 @@ function preload() {
     //Додали асети
     this.load.image('fon+', 'assets/fon+.png');
     this.load.image('ground', 'assets/platform.png');
+    this.load.image('cactus', 'assets/cactus.png');
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
     this.load.spritesheet('dude', 'assets/dude.png',
@@ -44,17 +45,16 @@ function preload() {
 function create() {
     //Додали платформу та небо
     ////this.add.image(0, 0, 'fon').setOrigin(0,0)
-    this.add.tileSprite(0,0, worldWidth, 1079, "fon+").setOrigin(0,0);
-    
+    this.add.tileSprite(0, 0, worldWidth, 1080, "fon+").setOrigin(0, 0);
+
     platforms = this.physics.add.staticGroup();
     //Створення землі на всю ширину
     for (var x = 0; x < worldWidth; x = x + 384) {
         console.log(x)
-        platforms.create(x, 1079 - 93, 'ground').setOrigin(0,0).refreshBody();
+        platforms.create(x, 1080 - 93, 'ground').setOrigin(0, 0).refreshBody();
     }
-
     //platforms.create(900, 900, 'ground').setScale(2).refreshBody();
-   
+
     //platforms.create(600, 400, 'ground');
     //platforms.create(500, 250, 'ground');
     //platforms.create(750, 220, 'ground');
@@ -65,10 +65,17 @@ function create() {
     player.setBounce(0.2);
     player.setCollideWorldBounds(false);
     //Налаштування камери
-    this.cameras.main.setBounds(0,0,worldWidth, 1079);
-    this.physics.world.setBounds(0,0,worldWidth, 1079);
+    this.cameras.main.setBounds(0, 0, worldWidth, 1080);
+    this.physics.world.setBounds(0, 0, worldWidth, 1080);
     //Додали слідкування камери за спрайтом
     this.cameras.main.startFollow(player);
+
+    var x = 0;
+    while (x < worldWidth) {
+        var y = Phaser.Math.FloatBetween(540, 1080); // Змінили діапазон висоти платформ
+        platforms.create(x, y, 'ground').setScale(0.5).refreshBody(); // Зменшели масштаб платформ
+        x += Phaser.Math.FloatBetween(200, 700); // Збільшели відстань між платформами
+    }
 
 
 
@@ -100,8 +107,7 @@ function create() {
         setXY: { x: 12, y: 0, stepX: 90 }
     });
 
-    stars.children.iterate(function (child) 
-    {
+    stars.children.iterate(function (child) {
         child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
     });
 
@@ -138,8 +144,7 @@ function update() {
     }
 }
 //Додали збираня зірок
-function collectStar(player, star) 
-{
+function collectStar(player, star) {
     star.disableBody(true, true);
     score += 10;
     scoreText.setText('Score: ' + score);
@@ -155,8 +160,7 @@ function collectStar(player, star)
     bomb.setCollideWorldBounds(true);
     bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
 
-    if (stars.countActive(true) === 0) 
-    {
+    if (stars.countActive(true) === 0) {
         stars.children.iterate(function (child) {
             child.enableBody(true, child.x, 0, true, true);
             child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
@@ -164,13 +168,12 @@ function collectStar(player, star)
     }
 }
 
-function hitBomb(player, bomb)
-    {
-        this.physics.pause();
-    
-        player.setTint(0xff0000);
-    
-        player.anims.play('turn');
-    
-        gameOver = true;
-    }
+function hitBomb(player, bomb) {
+    this.physics.pause();
+
+    player.setTint(0xff0000);
+
+    player.anims.play('turn');
+
+    gameOver = true;
+}
