@@ -34,6 +34,8 @@ function preload() {
     this.load.image('ground', 'assets/platform.png');
     this.load.image('cactus', 'assets/cactus.png');
     this.load.image('star', 'assets/star.png');
+    this.load.image('bush', 'assets/bush.png');
+    this.load.image('stone', 'assets/stone.png');
     this.load.image('bomb', 'assets/bomb.png');
     this.load.spritesheet('dude', 'assets/dude.png',
         { frameWidth: 32, frameHeight: 48 }
@@ -53,12 +55,15 @@ function create() {
         console.log(x)
         platforms.create(x, 1080 - 93, 'ground').setOrigin(0, 0).refreshBody();
     }
-    //platforms.create(900, 900, 'ground').setScale(2).refreshBody();
 
-    //platforms.create(600, 400, 'ground');
-    //platforms.create(500, 250, 'ground');
-    //platforms.create(750, 220, 'ground');
+    //
+    objects = this.physics.add.staticGroup();
 
+    for (var x = 0; x <= worldWidth; x = x + Phaser.Math.Between(200, 800)){
+        objects.create(x, 987,'cactus').setScale(Phaser.Math.FloatBetween(0.5, 2,)).setDepth(Phaser.Math.Between(0, 2)).setOrigin(0, 1).refreshBody();
+        objects.create(x, 987,'stone').setScale(Phaser.Math.FloatBetween(0.5, 2,)).setDepth(Phaser.Math.Between(0, 2)).setOrigin(0, 1).refreshBody();
+        objects.create(x, 989,'bush').setScale(Phaser.Math.FloatBetween(0.5, 2,)).setDepth(Phaser.Math.Between(0, 2)).setOrigin(0, 1).refreshBody();
+    }
     //Додали гравця
 
     player = this.physics.add.sprite(1500, 900, 'dude');
