@@ -18,7 +18,7 @@ var config = {
     }
 };
 
-var game =new Phaser.Game(config);
+var game = new Phaser.Game(config);
 var player;
 var stars;
 var bombs;
@@ -52,43 +52,65 @@ function preload() {
 }
 
 function create() {
-    //Додали платформу та небо
-    ////this.add.image(0, 0, 'fon').setOrigin(0,0)
-    this.add.tileSprite(0, 0, worldWidth, 1080, "fon+").setOrigin(0, 0);
+    //Створюємо фон плиткою
+    this.add.tileSprite(0, 0, worldWidth, 1080, "fon+")
+        .setOrigin(0, 0)
+        .setScale(1)
+        .setDepth(0);
 
+
+    //Додаємо платформи
     platforms = this.physics.add.staticGroup();
     //Створення землі на всю ширину
     for (var x = 0; x < worldWidth; x = x + 384) {
-        console.log(x)
-        platforms.create(x, 1080 - 93, 'ground').setOrigin(0, 0).refreshBody();
+        //console.log(x)
+        platforms
+            .create(x, 1080 - 93, 'ground')
+            .setOrigin(0, 0)
+            .refreshBody();
     }
 
     //
     objects = this.physics.add.staticGroup();
 
-    for (var x = 0; x <= worldWidth; x = x + Phaser.Math.Between(200, 800)){
-        objects.create(x, 987,'cactus').setScale(Phaser.Math.FloatBetween(0.5, 2,)).setDepth(Phaser.Math.Between(0, 2)).setOrigin(0, 1).refreshBody();
-        objects.create(x, 987,'stone').setScale(Phaser.Math.FloatBetween(0.5, 2,)).setDepth(Phaser.Math.Between(0, 2)).setOrigin(0, 1).refreshBody();
-        objects.create(x, 989,'bush').setScale(Phaser.Math.FloatBetween(0.5, 2,)).setDepth(Phaser.Math.Between(0, 2)).setOrigin(0, 1).refreshBody();
+    for (var x = 0; x <= worldWidth; x = x + Phaser.Math.Between(300, 500)) {
+        objects
+            .create(x, 987, 'cactus')
+            .setScale(Phaser.Math.FloatBetween(0.5, 2,))
+            .setDepth(Phaser.Math.Between(0, 2))
+            .setOrigin(0, 1)
+            .refreshBody();
+        objects
+            .create(x, 987, 'stone')
+            .setScale(Phaser.Math.FloatBetween(0.5, 2,))
+            .setDepth(Phaser.Math.Between(0, 2))
+            .setOrigin(0, 1).refreshBody();
+        objects
+            .create(x, 989, 'bush')
+            .setScale(Phaser.Math.FloatBetween(0.5, 2,))
+            .setDepth(Phaser.Math.Between(0, 2))
+            .setOrigin(0, 1)
+            .refreshBody();
     }
     //Додали гравця
-
     player = this.physics.add.sprite(1500, 900, 'dude');
-    player.setBounce(0.2);
-    player.setCollideWorldBounds(false);
+    player
+        .setBounce(0.2)
+        .setCollideWorldBounds(false)
+        .setDepth(5)
     //Налаштування камери
     this.cameras.main.setBounds(0, 0, worldWidth, 1080);
     this.physics.world.setBounds(0, 0, worldWidth, 1080);
     //Додали слідкування камери за спрайтом
     this.cameras.main.startFollow(player);
 
+    //Додаємо об'єкти випадковим чином на всю ширину екрана
     var x = 0;
     while (x < worldWidth) {
         var y = Phaser.Math.FloatBetween(540, 1080); // Змінили діапазон висоти платформ
         platforms.create(x, y, 'ground').setScale(0.5).refreshBody(); // Зменшели масштаб платформ
         x += Phaser.Math.FloatBetween(200, 700); // Збільшели відстань між платформами
     }
-
 
 
     this.anims.create({
@@ -133,7 +155,20 @@ function create() {
 
     this.physics.add.overlap(player, stars, collectStar, null, this);
     this.physics.add.collider(player, bombs, hitBomb, null, this);
+
+
+    for (var x = 0; x < worldWidth; x = x + Phaser.Math.Between(400, 500)) {
+        var y = Phaser.Math.Between(100, 700)
+
+        platforms.create(x, y, 'skyGroundStart');
+
+        platforms.create(x + 128, y, 'skyGround');
+
+        platforms.create(x + 128 * 2, y, 'skyGroundEnd');
+
 }
+}
+
 
 function update() {
     if (gameOver) {
