@@ -3,6 +3,7 @@ var config = {
     width: 1920,
     height: 1080,
     parent: game,
+    playerSpeed: 200,
     physics: {
         default: 'arcade',
         arcade: {
@@ -17,6 +18,7 @@ var config = {
     }
 };
 
+var game =new Phaser.Game(config);
 var player;
 var stars;
 var bombs;
@@ -25,13 +27,18 @@ var cursors;
 var score = 0;
 var gameOver = false;
 var scoreText;
-var game = new Phaser.Game(config);
-var worldWidth = 9600;
+var worldWidth = config.width * 2;
 
 function preload() {
     //Додали асети
     this.load.image('fon+', 'assets/fon+.png');
     this.load.image('ground', 'assets/platform.png');
+
+    //Повітряні платформи
+    this.load.image('skyGroundStar', 'assets/png/tile/14.png');
+    this.load.image('skyGround', 'assets/png/tile/15.png');
+    this.load.image('skyGroundEnd', 'assets/png/tile/15.png');
+
     this.load.image('cactus', 'assets/cactus.png');
     this.load.image('star', 'assets/star.png');
     this.load.image('bush', 'assets/bush.png');
