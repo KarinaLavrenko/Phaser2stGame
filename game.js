@@ -35,9 +35,9 @@ function preload() {
     this.load.image('ground', 'assets/platform.png');
 
     //Повітряні платформи
-    this.load.image('skyGroundStar', 'assets/png/tile/14.png');
-    this.load.image('skyGround', 'assets/png/tile/15.png');
-    this.load.image('skyGroundEnd', 'assets/png/tile/16.png');
+    this.load.image('14', 'assets/14.png');
+    this.load.image('15', 'assets/15.png');
+    this.load.image('16', 'assets/16.png');
 
     this.load.image('cactus', 'assets/cactus.png');
     this.load.image('star', 'assets/star.png');
@@ -160,11 +160,11 @@ function create() {
     for (var x = 0; x < worldWidth; x = x + Phaser.Math.Between(400, 500)) {
         var y = Phaser.Math.Between(100, 700)
 
-        platforms.create(x, y, 'skyGroundStart');
+        platforms.create(x, y, '14');
 
-        platforms.create(x + 128, y, 'skyGround');
+        platforms.create(x + 128, y, '15');
 
-        platforms.create(x + 128 * 2, y, 'skyGroundEnd');
+        platforms.create(x + 128 * 2, y, '16');
 
 }
 }
