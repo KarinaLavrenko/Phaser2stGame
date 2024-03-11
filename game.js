@@ -59,6 +59,11 @@ function create() {
         .setDepth(0);
 
 
+scoreText=this.add.text(100, 100, 'Score: 0', { fontSize: '32px', fill: '#FFF' })
+    scoreText.setOrigin(0,0)
+    .setDepth(10)
+    .setScrollFactor(0);
+
     //Додаємо платформи
     platforms = this.physics.add.staticGroup();
     //Створення землі на всю ширину
@@ -147,7 +152,6 @@ function create() {
 
     bombs = this.physics.add.group();
 
-    scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
     //Додали зіткнення зірок з платформою
     this.physics.add.collider(player, platforms);
     this.physics.add.collider(stars, platforms);
@@ -191,7 +195,8 @@ function update() {
     }
 }
 //Додали збираня зірок
-function collectStar(player, star) {
+function collectStar(player, star) 
+{
     star.disableBody(true, true);
     score += 10;
     scoreText.setText('Score: ' + score);
@@ -223,4 +228,6 @@ function hitBomb(player, bomb) {
     player.anims.play('turn');
 
     gameOver = true;
+
+    //scoreText.setText('Final Score: ' + score);
 }
