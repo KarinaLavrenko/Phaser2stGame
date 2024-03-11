@@ -24,9 +24,11 @@ var stars;
 var bombs;
 var platforms;
 var cursors;
+var lives = 3;
 var score = 0;
 var gameOver = false;
 var scoreText;
+var livesText;
 var worldWidth = config.width * 2;
 
 function preload() {
@@ -63,6 +65,11 @@ scoreText=this.add.text(100, 100, 'Score: 0', { fontSize: '32px', fill: '#FFF' }
     scoreText.setOrigin(0,0)
     .setDepth(10)
     .setScrollFactor(0);
+livesText = this.add.text(100, 150, 'Lives: ' + lives, { fontSize: '32px', fill: '#FFF' })
+    livesText.setOrigin(0,0)
+    .setDepth(10)
+    .setScrollFactor(0);
+
 
     //Додаємо платформи
     platforms = this.physics.add.staticGroup();
@@ -221,6 +228,31 @@ function collectStar(player, star)
 }
 
 function hitBomb(player, bomb) {
+    lives--;
+
+    if (lives <= 0) {
+        this.physics.pause();
+        player.setTint(0xff0000);
+        player.anims.play('turn');
+        gameOver = true;
+
+        //Display game over message
+        scoreText.setText('Game Over - Final Score: ' + score);
+    } else {
+        // Update lives text
+        livesText.setText('Lives: ' + lives);
+
+        // Reset player and bombs
+        player.setVelocity(0, 0);
+        player.setX(1500);
+        player.setY(900);
+        player.clearTint();
+
+        bomb.disableBody(true, true); // Destroy all bombs
+
+        // Resume physics
+        this.physics.resume();
+
     this.physics.pause();
 
     player.setTint(0xff0000);
@@ -230,4 +262,5 @@ function hitBomb(player, bomb) {
     gameOver = true;
 
     //scoreText.setText('Final Score: ' + score);
+}
 }
