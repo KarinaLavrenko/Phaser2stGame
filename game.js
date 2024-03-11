@@ -176,7 +176,6 @@ livesText = this.add.text(100, 150, 'Lives: ' + lives, { fontSize: '32px', fill:
         platforms.create(x + 128, y, '15');
 
         platforms.create(x + 128 * 2, y, '16');
-
 }
 }
 
