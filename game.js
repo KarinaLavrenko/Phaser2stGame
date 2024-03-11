@@ -37,7 +37,7 @@ function preload() {
     //Повітряні платформи
     this.load.image('skyGroundStar', 'assets/png/tile/14.png');
     this.load.image('skyGround', 'assets/png/tile/15.png');
-    this.load.image('skyGroundEnd', 'assets/png/tile/15.png');
+    this.load.image('skyGroundEnd', 'assets/png/tile/16.png');
 
     this.load.image('cactus', 'assets/cactus.png');
     this.load.image('star', 'assets/star.png');
