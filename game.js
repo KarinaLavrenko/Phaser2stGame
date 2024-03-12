@@ -260,15 +260,15 @@ function hitBomb(player, bomb) {
     //Швидкість бомби
     bomb.setVelocityX(300 * direction);
 
-    // Помітити гравця червоним
+    //Гравець червоного кольору
     player.setTint(0xff0000);
 
     // Запуск таймера для скасування ефекту червоного кольору через 3 секунди
     this.time.addEvent({
-        delay: 3000,  // 3000 мілісекунд = 3 секунди
+        delay: 1000,  // 1 секунда
         callback: function() {
-            player.clearTint();  // Скасування червоного кольору
-            isHitByBomb = false; // Позначте, що таймер завершено
+            player.clearTint();  // Скасування червоного кольору гравця
+            isHitByBomb = false;
         },
         callbackScope: this,
         loop: false
