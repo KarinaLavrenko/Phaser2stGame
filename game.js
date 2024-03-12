@@ -48,6 +48,7 @@ function preload() {
     this.load.image('bush', 'assets/bush.png');
     this.load.image('stone', 'assets/stone.png');
     this.load.image('bomb', 'assets/bomb.png');
+    this.load.image('reloadButton', 'assets/reloadButton.png');
     this.load.spritesheet('dude', 'assets/dude.png',
         { frameWidth: 32, frameHeight: 48 }
     );
@@ -64,14 +65,23 @@ function create() {
 
 
 scoreText=this.add.text(100, 100, 'Score: 0', { fontSize: '32px', fill: '#FFF' })
-    scoreText.setOrigin(0,0)
-    .setDepth(10)
-    .setScrollFactor(0);
-livesText = this.add.text(100, 150, 'Lives: ' + lives, { fontSize: '32px', fill: '#FFF' })
+scoreText.setOrigin(0,0)
+.setDepth(10)
+.setScrollFactor(0);
+livesText = this.add.text(1500, 100, 'Lives: ' + lives, { fontSize: '32px', fill: '#FFF' })
     livesText.setOrigin(0,0)
     .setDepth(10)
     .setScrollFactor(0);
 
+    var reloadButton = this.add.image(95, 40, 'reloadButton')
+    reloadButton.setOrigin(0,0)
+    .setDepth(10)
+    .setScrollFactor(0)
+    .setInteractive()
+    .on('pointerdown', function() {
+        // Перезавантаження гри
+        location.reload();
+    });
 
     //Додаємо платформи
     platforms = this.physics.add.staticGroup();
@@ -107,17 +117,6 @@ livesText = this.add.text(100, 150, 'Lives: ' + lives, { fontSize: '32px', fill:
             .setOrigin(0, 1)
             .refreshBody();
     }
-    var resetButton = this.add.text(50, 50, 'RESET')
-    .setInteractive()
-    .setScale(2)
-    .setScrollFactor(0);
-    
-    resetButton.on('pointerdown', () => {      
-        this.scene.restart(); 
-        lives = 3
-        score = 0
-        gameOver = false
-    });
 
 
     //Додали гравця
