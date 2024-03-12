@@ -30,6 +30,8 @@ var gameOver = false;
 var scoreText;
 var livesText;
 var worldWidth = config.width * 2;
+var playerSpeed = 1000
+var collectStarSound; // Оголошуємо змінну для збереження звуку
 
 function preload() {
     //Додали асети
@@ -79,6 +81,7 @@ livesText = this.add.text(100, 150, 'Lives: ' + lives, { fontSize: '32px', fill:
         platforms
             .create(x, 1080 - 93, 'ground')
             .setOrigin(0, 0)
+            .setDepth(100)
             .refreshBody();
     }
 
@@ -104,6 +107,19 @@ livesText = this.add.text(100, 150, 'Lives: ' + lives, { fontSize: '32px', fill:
             .setOrigin(0, 1)
             .refreshBody();
     }
+    var resetButton = this.add.text(50, 50, 'RESET')
+    .setInteractive()
+    .setScale(2)
+    .setScrollFactor(0);
+    
+    resetButton.on('pointerdown', () => {      
+        this.scene.restart(); 
+        lives = 3
+        score = 0
+        gameOver = false
+    });
+
+
     //Додали гравця
     player = this.physics.add.sprite(1500, 900, 'dude');
     player
@@ -225,41 +241,42 @@ function collectStar(player, star)
         });
     }
 }
+var isHitByBomb = false;
 
 function hitBomb(player, bomb) {
-    lives--;
+    // Перевірка
+    if (isHitByBomb) {
+        return;
+    }
 
-    if (lives <= 0) {
+    //Блокувати подальших викликів функцій
+    isHitByBomb = true;
+
+    lives = lives - 1;
+    livesText.setText('Lives: ' + lives);
+
+    var direction = (bomb.x < player.x) ? 1 : -1;
+
+    //Швидкість бомби
+    bomb.setVelocityX(300 * direction);
+
+    // Помітити гравця червоним
+    player.setTint(0xff0000);
+
+    // Запуск таймера для скасування ефекту червоного кольору через 3 секунди
+    this.time.addEvent({
+        delay: 3000,  // 3000 мілісекунд = 3 секунди
+        callback: function() {
+            player.clearTint();  // Скасування червоного кольору
+            isHitByBomb = false; // Позначте, що таймер завершено
+        },
+        callbackScope: this,
+        loop: false
+    });
+    if (lives === 0) {
+        gameOver = true;
         this.physics.pause();
         player.setTint(0xff0000);
         player.anims.play('turn');
-        gameOver = true;
-
-        //Display game over message
-        scoreText.setText('Game Over - Final Score: ' + score);
-    } else {
-        // Update lives text
-        livesText.setText('Lives: ' + lives);
-
-        // Reset player and bombs
-        player.setVelocity(0, 0);
-        player.setX(1500);
-        player.setY(900);
-        player.clearTint();
-
-        bomb.disableBody(true, true); // Destroy all bombs
-
-        // Resume physics
-        this.physics.resume();
-
-    this.physics.pause();
-
-    player.setTint(0xff0000);
-
-    player.anims.play('turn');
-
-    gameOver = true;
-
-    //scoreText.setText('Final Score: ' + score);
-}
+    }
 }
