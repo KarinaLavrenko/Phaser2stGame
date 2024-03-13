@@ -65,15 +65,15 @@ function create() {
 
 
 scoreText=this.add.text(100, 100, 'Score: 0', { fontSize: '32px', fill: '#FFF' })
-scoreText.setOrigin(0,0)
-.setDepth(10)
-.setScrollFactor(0);
-livesText = this.add.text(1500, 100, 'Lives: ' + lives, { fontSize: '32px', fill: '#FFF' })
+    scoreText.setOrigin(0,0)
+    .setDepth(10)
+    .setScrollFactor(0);
+livesText = this.add.text(1500, 100, showlives(), { fontSize: '32px', fill: '#FFF' })
     livesText.setOrigin(0,0)
     .setDepth(10)
     .setScrollFactor(0);
 
-    var reloadButton = this.add.image(95, 40, 'reloadButton')
+var reloadButton = this.add.image(95, 40, 'reloadButton')
     reloadButton.setOrigin(0,0)
     .setDepth(10)
     .setScrollFactor(0)
@@ -252,7 +252,7 @@ function hitBomb(player, bomb) {
     isHitByBomb = true;
 
     lives = lives - 1;
-    livesText.setText('Lives: ' + lives);
+    livesText.setText(showlives())
 
     var direction = (bomb.x < player.x) ? 1 : -1;
 
@@ -278,4 +278,14 @@ function hitBomb(player, bomb) {
         player.setTint(0xff0000);
         player.anims.play('turn');
     }
+}
+
+function showlives() {
+    var livesLine = ''
+
+    for (var i = 0; i < lives; i++) {
+        livesLine += '💖'
+    }
+
+    return livesLine
 }
