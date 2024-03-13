@@ -23,6 +23,7 @@ var player;
 var stars;
 var bombs;
 var platforms;
+var reloadButton;
 var cursors;
 var lives = 3;
 var score = 0;
@@ -73,7 +74,7 @@ livesText = this.add.text(1500, 100, showlives(), { fontSize: '32px', fill: '#FF
     .setDepth(10)
     .setScrollFactor(0);
 
-var reloadButton = this.add.image(95, 40, 'reloadButton')
+reloadButton = this.add.image(95, 40, 'reloadButton')
     reloadButton.setOrigin(0,0)
     .setDepth(10)
     .setScrollFactor(0)
@@ -82,6 +83,8 @@ var reloadButton = this.add.image(95, 40, 'reloadButton')
         // Перезавантаження гри
         location.reload();
     });
+
+reloadButton.setVisible(false); // Початково ховаємо кнопку
 
     //Додаємо платформи
     platforms = this.physics.add.staticGroup();
@@ -214,6 +217,18 @@ function update() {
     if (cursors.up.isDown && player.body.touching.down) {
         player.setVelocityY(-480);
     }
+     {
+        if (gameOver) {
+            return;
+        }
+    
+        // Перевіряємо, чи життя рівне нулю, і показуємо кнопку
+        if (lives === 0) {
+            reloadButton.setVisible(true);
+        }
+    
+    }
+
 }
 //Додали збираня зірок
 function collectStar(player, star) 
@@ -242,43 +257,40 @@ function collectStar(player, star)
 }
 var isHitByBomb = false;
 
+
 function hitBomb(player, bomb) {
-    // Перевірка
     if (isHitByBomb) {
         return;
     }
 
-    //Блокувати подальших викликів функцій
     isHitByBomb = true;
 
     lives = lives - 1;
-    livesText.setText(showlives())
+    livesText.setText(showlives());
 
     var direction = (bomb.x < player.x) ? 1 : -1;
-
-    //Швидкість бомби
     bomb.setVelocityX(300 * direction);
 
-    //Гравець червоного кольору
     player.setTint(0xff0000);
 
-    // Запуск таймера для скасування ефекту червоного кольору через 3 секунди
     this.time.addEvent({
-        delay: 1000,  // 1 секунда
+        delay: 1000,
         callback: function() {
-            player.clearTint();  // Скасування червоного кольору гравця
+            player.clearTint();
             isHitByBomb = false;
+
+            if (lives === 0) {
+                gameOver = true;
+                reloadButton.setVisible(true); // Показуємо кнопку перезавантаження
+                this.physics.pause();
+                player.anims.play('turn');
+            }
         },
         callbackScope: this,
         loop: false
     });
-    if (lives === 0) {
-        gameOver = true;
-        this.physics.pause();
-        player.setTint(0xff0000);
-        player.anims.play('turn');
-    }
 }
+    
 
 function showlives() {
     var livesLine = ''
