@@ -49,10 +49,12 @@ function preload() {
     this.load.image('bush', 'assets/bush.png');
     this.load.image('stone', 'assets/stone.png');
     this.load.image('bomb', 'assets/bomb.png');
+    this.load.image('heart', 'assets/heart.png');
     this.load.image('reloadButton', 'assets/reloadButton.png');
     this.load.spritesheet('dude', 'assets/dude.png',
         { frameWidth: 32, frameHeight: 48 }
     );
+    this.load.audio('collectHeartSound', 'assets/collect_heart.mp3');
     this.load.audio('collectStarSound', 'assets/collect_star.mp3');
     this.load.audio('explosionSound', 'assets/explosion.mp3');
 }
@@ -65,26 +67,26 @@ function create() {
         .setDepth(0);
 
 
-scoreText=this.add.text(100, 100, 'Score: 0', { fontSize: '32px', fill: '#FFF' })
-    scoreText.setOrigin(0,0)
-    .setDepth(10)
-    .setScrollFactor(0);
-livesText = this.add.text(1500, 100, showlives(), { fontSize: '32px', fill: '#FFF' })
-    livesText.setOrigin(0,0)
-    .setDepth(10)
-    .setScrollFactor(0);
+    scoreText = this.add.text(100, 100, 'Score: 0', { fontSize: '32px', fill: '#FFF' })
+    scoreText.setOrigin(0, 0)
+        .setDepth(10)
+        .setScrollFactor(0);
+    livesText = this.add.text(1500, 100, showlives(), { fontSize: '32px', fill: '#FFF' })
+    livesText.setOrigin(0, 0)
+        .setDepth(10)
+        .setScrollFactor(0);
 
-reloadButton = this.add.image(95, 40, 'reloadButton')
-    reloadButton.setOrigin(0,0)
-    .setDepth(10)
-    .setScrollFactor(0)
-    .setInteractive()
-    .on('pointerdown', function() {
-        // Перезавантаження гри
-        location.reload();
-    });
+    reloadButton = this.add.image(700, 500, 'reloadButton')
+    reloadButton.setOrigin(0, 0)
+        .setDepth(10)
+        .setScrollFactor(0)
+        .setInteractive()
+        .on('pointerdown', function () {
+            // Перезавантаження гри
+            location.reload();
+        });
 
-reloadButton.setVisible(false); // Початково ховаємо кнопку
+    reloadButton.setVisible(false); // Початково ховаємо кнопку
 
     //Додаємо платформи
     platforms = this.physics.add.staticGroup();
@@ -175,14 +177,27 @@ reloadButton.setVisible(false); // Початково ховаємо кнопк�
         child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
     });
 
+    hearts = this.physics.add.group({
+        key: 'heart',
+        repeat: 111,
+        setXY: { x: 12, y: 0, stepX: 150}
+    });
+
+    hearts.children.iterate(function (child) {
+        child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+    });
+    
+    
     bombs = this.physics.add.group();
 
     //Додали зіткнення зірок з платформою
     this.physics.add.collider(player, platforms);
     this.physics.add.collider(stars, platforms);
     this.physics.add.collider(bombs, platforms);
+    this.physics.add.collider(hearts, platforms);
 
     this.physics.add.overlap(player, stars, collectStar, null, this);
+    this.physics.add.collider(player, hearts, collectHeart, null, this);
     this.physics.add.collider(player, bombs, hitBomb, null, this);
 
 
@@ -194,9 +209,19 @@ reloadButton.setVisible(false); // Початково ховаємо кнопк�
         platforms.create(x + 128, y, '15');
 
         platforms.create(x + 128 * 2, y, '16');
-}
-}
+    }
+    hearts = this.physics.add.group({
+        key: 'heart',
+        repeat: 5,
+        setXY: { x: 12, y: 0, stepX: 300 }
+    });
 
+    hearts.children.iterate(function (heart) {
+        heart.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+    });
+
+    this.physics.add.collider(player, hearts, collectHeart, null, this);
+}
 
 function update() {
     if (gameOver) {
@@ -217,22 +242,21 @@ function update() {
     if (cursors.up.isDown && player.body.touching.down) {
         player.setVelocityY(-480);
     }
-     {
+    {
         if (gameOver) {
             return;
         }
-    
+
         // Перевіряємо, чи життя рівне нулю, і показуємо кнопку
         if (lives === 0) {
             reloadButton.setVisible(true);
         }
-    
+
     }
 
 }
 //Додали збираня зірок
-function collectStar(player, star) 
-{
+function collectStar(player, star) {
     star.disableBody(true, true);
     score += 10;
     scoreText.setText('Score: ' + score);
@@ -255,6 +279,14 @@ function collectStar(player, star)
         });
     }
 }
+
+function collectHeart(player, heart) {
+    heart.disableBody(true, true);
+    lives += 1; // Змінюємо здоров'я на +1
+
+    // Додамо звук збирання сердечка
+    this.sound.play('collectHeartSound');
+}
 var isHitByBomb = false;
 
 
@@ -275,7 +307,7 @@ function hitBomb(player, bomb) {
 
     this.time.addEvent({
         delay: 1000,
-        callback: function() {
+        callback: function () {
             player.clearTint();
             isHitByBomb = false;
 
@@ -290,7 +322,7 @@ function hitBomb(player, bomb) {
         loop: false
     });
 }
-    
+
 
 function showlives() {
     var livesLine = ''
