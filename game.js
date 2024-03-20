@@ -332,7 +332,7 @@ function hitBomb(player, bomb) {
     isHitByBomb = true;
 
     lives = lives - 1;
-    livesText.setText(showlives());
+    livesText.setText(showTextSymbols());
 
     var direction = (bomb.x < player.x) ? 1 : -1;
     bomb.setVelocityX(300 * direction);
