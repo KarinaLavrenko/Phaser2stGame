@@ -356,13 +356,26 @@ function hitBomb(player, bomb) {
         loop: false
     });
 }
+function hitEnemy(player, enemy) {
+    player.setTint(0xff0000);
+    lives--;
+    livesText.setText('💖'.repeat(lives));
+    this.time.delayedCall(1000, function () {
+        player.clearTint();
+        if (lives === 0) {
+            gameOver = true;
+            reloadButton.setVisible(true);
+            this.physics.pause();
+        }
+    }, [], this);
+}
 
 
 function showTextSymbols(symbol,count) {
     var symbolLine = ''
 
     for (var i = 0; i < count; i++) {
-        symbolLine = symbolLine + symbol
+        symbolLine += symbol
     }
 
     return symbolLine
