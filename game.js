@@ -51,6 +51,7 @@ function preload() {
             { frameWidth: 32, frameHeight: 48 });
     this.load.image('star', 'assets/star.png');
     this.load.image('bush', 'assets/bush.png');
+    this.load.image('fire', 'assets/bullet1.png');
     this.load.image('stone', 'assets/stone.png');
     this.load.image('bomb', 'assets/bomb.png');
     this.load.image('heart', 'assets/heart.png');
@@ -223,7 +224,6 @@ function create() {
     this.physics.add.collider(player, hearts, collectHeart, null, this);
     this.physics.add.collider(player, bombs, hitBomb, null, this);
 
-
     for (var x = 0; x < worldWidth; x = x + Phaser.Math.Between(400, 500)) {
         var y = Phaser.Math.Between(100, 700)
 
@@ -332,7 +332,7 @@ function hitBomb(player, bomb) {
     isHitByBomb = true;
 
     lives = lives - 1;
-    livesText.setText(showTextSymbols());
+    livesText.setText(showTextSymbols('💖', lives));
 
     var direction = (bomb.x < player.x) ? 1 : -1;
     bomb.setVelocityX(300 * direction);
@@ -355,19 +355,6 @@ function hitBomb(player, bomb) {
         callbackScope: this,
         loop: false
     });
-}
-function hitEnemy(player, enemy) {
-    player.setTint(0xff0000);
-    lives--;
-    livesText.setText('💖'.repeat(lives));
-    this.time.delayedCall(1000, function () {
-        player.clearTint();
-        if (lives === 0) {
-            gameOver = true;
-            reloadButton.setVisible(true);
-            this.physics.pause();
-        }
-    }, [], this);
 }
 
 
