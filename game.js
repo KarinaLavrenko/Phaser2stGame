@@ -318,13 +318,16 @@ function bulletEnemyCollisionHandler(bullet, enemy) {
     enemyCount -= 1
     enemyText.setText(showTextSymbols('👾', enemyCount))
 }
-//Додали збирання зірок персонажем 11
+//Додали збирання зірок
 function collectStar(player, star) {
     star.disableBody(true, true);
     score += 10;
     scoreText.setText('Score: ' + score);
 
-    // Створення бомби
+    //Додали звук збирання зірок
+    this.sound.play('collectStarSound');
+
+    
     var x = Phaser.Math.Between(0, worldWidth);
     var y = Phaser.Math.Between(0, config.height);
     var bomb = bombs.create(x, 0, 'bomb');
@@ -333,9 +336,8 @@ function collectStar(player, star) {
     bomb.setCollideWorldBounds(true);
     bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
 
-    if (stars.countActive(true) === 0) // Перевірка, чи всі зірки зібрані
+    if (stars.countActive(true) === 0)
     {
-        // Створення нових зірок
         stars.children.iterate(function (child) {
             child.enableBody(true, child.x, 0, true, true);
             child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
