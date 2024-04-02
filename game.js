@@ -17,7 +17,8 @@ var config = {
         update: update
     }
 };
-var resetButton;
+
+var reloadButton;
 var lifeLine = ''
 var life = 3;
 var player;
@@ -32,7 +33,6 @@ var lifeText;
 var game = new Phaser.Game(config);
 var worldWidth = 9600;
 var playerSpeed = 1000
-// var collectStarSound; // Оголошуємо змінну для збереження звуку
 var fire;
 var enemy;
 var enemyCount = 4
@@ -41,12 +41,11 @@ var symbolLine
 var symbol
 var TextSymbols
 var bulletts
-var fireRate = 500; // Час у мілісекундах між вистрілами
-var lastFired = 0; // Час останньої генерації пулі
-
+var fireRate = 200;
+var lastFired = 0;
 
 function preload() {
-    //Завантажили асетси 2
+    //Додали асети
     this.load.image('bush', 'assets/bush.png');
     this.load.image('fon+', 'assets/fon+.png');
     this.load.image('ground', 'assets/platform.png');
@@ -56,49 +55,47 @@ function preload() {
         'assets/dude.png',
         { frameWidth: 32, frameHeight: 48 }
     );
-    this.load.image('skyGroundStart', 'assets/skyGroundStart.png');
-    this.load.image('skyGround', 'assets/skyGround.png');
-    this.load.image('skyGroundEnd', 'assets/skyGroundEnd.png');
+    //Повітряні платформи
+    this.load.image('14', 'assets/14.png');
+    this.load.image('15', 'assets/15.png');
+    this.load.image('16', 'assets/16.png');
     this.load.image('Skeleton', 'assets/Skeleton.png');
     this.load.image('Tree', 'assets/Tree.png');
-    // this.load.audio('collectStarSound',   'assets/collectStarSound.mp3');
-    this.load.image('resetButton', 'assets/resetButton.png');
+    this.load.image('reloadButton', 'assets/reloadButton.png');
     this.load.image('heart', 'assets/life.png');
     this.load.image('enemy', 'assets/zombie.png');
     this.load.image('fire', 'assets/bullet1.png')
+
+    this.load.audio('collectHeartSound', 'assets/collect_heart.mp3');
+    this.load.audio('collectStarSound', 'assets/collect_star.mp3');
+    this.load.audio('explosionSound', 'assets/explosion.mp3');
 }
 
 function create() {
 
-    //Створюємо небо 3
-    this.add.tileSprite(0, 0, worldWidth, 1080, "fon+")
-        .setOrigin(0, 0);
-
-    //Додаємо платформи 4
+    //Створюємо фон плиткую
+    this.add.tileSprite(0, 0, worldWidth, 1080, "fon+").setOrigin(0, 0);
     platforms = this.physics.add.staticGroup();
-    //Земля на всю ширину екрану
+    //Створюємо землю на всю ширину екрану
     for (var x = 0; x < worldWidth; x = x + 340) {
         console.log(x)
         platforms.create(x, 1080 - 83, 'ground')
             .setOrigin(0, 0)
             .refreshBody();
     }
-    //додаємо кущі
+    //Додаємо кущі
     bush = this.physics.add.staticGroup();
     createWorldObjects(bush, 'bush')
 
-
-    //Додавання скелетів на землю
     Skeleton = this.physics.add.staticGroup();
     createWorldObjects(Skeleton, 'Skeleton')
 
-    // Додавання дерева 
     Tree = this.physics.add.staticGroup();
     createWorldObjects(Tree, 'Tree')
 
 
-    resetButton = this.add.image(700, 500, 'resetButton')
-    resetButton.setOrigin(0, 0)
+    reloadButton = this.add.image(700, 500, 'reloadButton')
+    reloadButton.setOrigin(0, 0)
         .setDepth(10)
         .setScrollFactor(0)
         .setInteractive()
@@ -106,8 +103,8 @@ function create() {
             // Перезавантаження гри
             location.reload();
         });
-
-    resetButton.setVisible(false); // Початково ховаємо кнопку
+    // Початково ховаємо кнопку
+    reloadButton.setVisible(false);
 
     player = this.physics.add.sprite(1500, 900, 'dude');
     player.setBounce(0.2);
@@ -118,21 +115,21 @@ function create() {
     //Слідкування камери за гравцем
     this.cameras.main.startFollow(player);
 
-    //Рандом платформи в повітрі
+    //Додаємо платформи випадковим чином
     for (var x = 0; x < worldWidth; x = x + Phaser.Math.Between(800, 1000)) {
         var y = Phaser.Math.Between(550, 810)
 
-        platforms.create(x, y, 'skyGroundStart')
+        platforms.create(x, y, '14')
         var i
         for (i = 1; i <= Phaser.Math.Between(1, 5); i++) {
-            platforms.create(x + 128 * i, y, 'skyGround')
+            platforms.create(x + 128 * i, y, '15')
         }
 
-        platforms.create(x + 128 * i, y, 'skyGroundEnd')
+        platforms.create(x + 128 * i, y, '16')
     }
 
 
-    //Анімація персонажа
+    //Додали гравця
     this.anims.create({
         key: 'left',
         frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
@@ -153,9 +150,9 @@ function create() {
         repeat: -1
     });
 
-    //Додали курсор 6
+    //Додали курсор
     cursors = this.input.keyboard.createCursorKeys();
-    //Додали зірочки 8
+    //Додали зірки
     stars = this.physics.add.group({
         key: 'star',
         repeat: 111,
@@ -172,7 +169,7 @@ function create() {
         .setOrigin(0, 0)
         .setScrollFactor(0);
 
-    //Додавання життів
+    //Додали життя
     lifeText = this.add.text(1700, 16, showLife(), { fontSize: '32px', fill: '#ffffff' })
         .setOrigin(1, 0)
         .setScrollFactor(0);
@@ -191,24 +188,19 @@ function create() {
 
     });
 
-    // коллайдер життів та платформ
+    //Додали зіткнення зірок з платформою
     this.physics.add.collider(heart, platforms);
-
-    //  стикання колайдера гравця з колайдером життів
     this.physics.add.overlap(player, heart, collectHeart, null, this);
-    //Додали зіткнення зірок з платформами 9
     this.physics.add.collider(player, platforms);
     this.physics.add.collider(stars, platforms);
     this.physics.add.collider(bombs, platforms);
-    //
-    //Перевіримо чи перекривається персонаж зіркою 10
     this.physics.add.overlap(player, stars, collectStar, null, this);
     this.physics.add.collider(player, bombs, hitBomb, null, this);
 
     this.physics.add.collider(player, enemy, () => {
         player.x = player.x + Phaser.Math.FloatBetween(-200, 200);
     }, null, this);
-    //Ворог випадковим чином на всю ширину світу
+    //Додали ворога
     enemy = this.physics.add.group({
         key: 'enemy',
         repeat: enemyCount - 1,
@@ -219,27 +211,21 @@ function create() {
             .setCollideWorldBounds(true)
             .setVelocityX(Phaser.Math.FloatBetween(-500, 500))
     });
-
-    // колізія ворогів та гравця
     this.physics.add.collider(player, enemy, () => {
         player.x = Phaser.Math.FloatBetween(-200, 200);
 
     }, null, this);
-    //Кількість ворогів
+    //Рахунок ворогів
     enemyText = this.add.text(45, 70, showTextSymbols('👾', enemyCount), { fontSize: '40px', fill: '#FFF' })
         .setOrigin(0, 0)
         .setScrollFactor(0)
     this.physics.add.collider(enemy, platforms);
 
 
-    // Створення групи для пуль
+    //Додали пулі
     bullets = this.physics.add.group();
-    // Додавання колайдеру пуль з платформами
     this.physics.add.collider(bullets, platforms);
-
-    // Додавання колайдеру пуль з ворогами
     this.physics.add.collider(bullets, enemy, bulletEnemyCollisionHandler);
-    // Додавання колайдеру пуль з бомбами
     this.physics.add.collider(bullets, bombs, bulletEnemyCollisionHandler);
 
 
@@ -247,8 +233,6 @@ function create() {
 
 
 function update() {
-
-    //Агро радіус
     if (Math.abs(player.x - enemy.x) < 600) {
         enemy.moveTo(player, player.x, player.y, 300, 1)
     }
@@ -262,7 +246,7 @@ function update() {
     if (gameOver) {
         return;
     }
-    //Управління персонажем 7
+    //Додали керування персонажем
     if (cursors.left.isDown) {
         player.setVelocityX(-160);
 
@@ -333,8 +317,6 @@ function bulletEnemyCollisionHandler(bullet, enemy) {
     enemy.disableBody(true, true); // Вимкнення ворога
     enemyCount -= 1
     enemyText.setText(showTextSymbols('👾', enemyCount))
-    //Tree.disableBody(true, true);
-    //bombs.disableBody(true, true);
 }
 //Додали збирання зірок персонажем 11
 function collectStar(player, star) {
@@ -369,15 +351,13 @@ function hitBomb(player, bomb) {
     lifeText.setText(showLife())
 
     if (life === 0) {
-        resetButton.setVisible(true);
+        reloadButton.setVisible(true);
         gameOver = true;
         this.physics.pause();
         player.setTint(0xff0000);
         player.anims.play('turn');
     }
 }
-
-
 
 function showLife() {
     var lifeLine = ''
@@ -387,15 +367,18 @@ function showLife() {
     }
     return lifeLine
 }
-//Смуга символів
-function showTextSymbols(symbol, count) {
-    var symbolLine = ''
 
-    for (var i = 0; i < count; i++) {
-        symbolLine = symbolLine + symbol
+//Додалт кущі випадковим чином
+function createWorldObjects(object, asset) {
+    for (var x = 0; x < worldWidth; x = x + Phaser.Math.FloatBetween(500, 1000)) {
+        var y = 1000;
+        console.log(x, y);
+        bush.create(x, y, asset)
+            .setScale(Phaser.Math.FloatBetween(0.3, 2))
+            .setOrigin(0, 1)
+            .setDepth(Phaser.Math.FloatBetween(1, 10))
+            .refreshBody();
     }
-
-    return symbolLine
 }
 
 function collectHeart(player, heart) {
@@ -408,15 +391,12 @@ function collectHeart(player, heart) {
     console.log(life)
 }
 
-function createWorldObjects(object, asset) {
-    // Додавання кущів випадковим чином на всю ширину екрану
-    for (var x = 0; x < worldWidth; x = x + Phaser.Math.FloatBetween(500, 1000)) {
-        var y = 1000;
-        console.log(x, y);
-        bush.create(x, y, asset)
-            .setScale(Phaser.Math.FloatBetween(0.3, 2))
-            .setOrigin(0, 1)
-            .setDepth(Phaser.Math.FloatBetween(1, 10))
-            .refreshBody();
+function showTextSymbols(symbol, count) {
+    var symbolLine = ''
+
+    for (var i = 0; i < count; i++) {
+        symbolLine = symbolLine + symbol
     }
+
+    return symbolLine
 }
