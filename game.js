@@ -1,4 +1,3 @@
-////Конфігуруємо гру 1
 var config = {
     type: Phaser.AUTO,
     width: 1920,
@@ -35,7 +34,7 @@ var worldWidth = 9600;
 var playerSpeed = 1000
 var fire;
 var enemy;
-var enemyCount = 4
+var enemyCount = 10
 var enemyText
 var symbolLine
 var symbol
