@@ -324,7 +324,7 @@ function collectStar(player, star) {
     scoreText.setText('Score: ' + score);
 
     //Додали звук збирання зірок
-   
+    this.sound.play('collectStarSound');
 
     
     var x = Phaser.Math.Between(0, worldWidth);
